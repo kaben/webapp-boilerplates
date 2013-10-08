@@ -4,6 +4,7 @@ from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
  
 SQLALCHEMY_DATABASE_URI = "sqlite:///hello.db"
+SECRET_KEY = "\xd8\x1e\x88\xf4\xb7\xa9@\xb8p\n2v\x1d\xb5\xb9IfA\xf6\x14\x80\x89\xf4F"
   
 app = Flask(__name__)
 app.config.from_object(__name__)

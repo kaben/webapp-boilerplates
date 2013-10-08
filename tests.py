@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import unittest
 import webapp
+from flask import flash, render_template
+import unittest
 
 class TestHello(unittest.TestCase):
   def setUp(self):
@@ -38,6 +39,23 @@ class TestHello(unittest.TestCase):
     dump = view_db.view_database(webapp)
     self.assertTrue("foo" in dump)
     self.assertTrue("bar" in dump)
+
+  def test_flashed_messages(self):
+    @webapp.app.route("/flashtest")
+    def flashtest():
+      flash("Testing flashed messages")
+      return render_template("hello.html", title="Hi there.")
+    print self.client.get("/flashtest").data
+    self.assertTrue("Testing flashed messages" in self.client.get("/flashtest").data)
+    
+  def test_error_messages(self):
+    @webapp.app.route("/errortest")
+    def errortest():
+      error = "This is an error!"
+      return render_template("hello.html", title="Hi there.", error=error)
+    print self.client.get("/errortest").data
+    self.assertTrue("This is an error!" in self.client.get("/errortest").data)
+    
 
 if __name__ == "__main__": unittest.main()
 
