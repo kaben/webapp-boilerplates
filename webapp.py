@@ -16,6 +16,9 @@ class User(db.Model):
   email = db.Column(db.String, unique=True, nullable=False)
   password = db.Column(db.String, nullable=False)
 
+  def __repr__(self):
+    return "<User login: '{login}', email: '{email}'>".format(**self.__dict__)
+
 @app.route("/hello")
 def hello():
   return render_template("hello.html", title="Hi there.")
