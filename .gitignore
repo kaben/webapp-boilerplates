@@ -1,0 +1,9 @@
+
+# Ignore byte-compiled Python files.
+*.py?
+
+# Ignore Vim swapfiles.
+*.swp
+
+# Ignore test coverage files.
+.coverage
