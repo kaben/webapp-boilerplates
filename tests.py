@@ -15,7 +15,7 @@ class TestHello(unittest.TestCase):
     webapp.db.drop_all()
 
   def test_hello(self):
-    self.assertTrue("<h1>Hello!</h1>" in self.client.get("/hello").data)
+    self.assertTrue("Hello!" in self.client.get("/hello").data)
 
   def test_db_setup(self):
     user = webapp.User(login="foo", email="foo@gmail.com", password="password")
