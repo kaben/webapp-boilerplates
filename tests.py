@@ -6,7 +6,7 @@ class TestHello(unittest.TestCase):
     self.client = app.test_client()
 
   def test_hello(self):
-    self.assertTrue("Hello!" in self.client.get("/hello").data)
+    self.assertTrue("<h1>Hello!</h1>" in self.client.get("/hello").data)
 
 if __name__ == "__main__": unittest.main()
 
