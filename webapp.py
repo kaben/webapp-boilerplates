@@ -1,5 +1,17 @@
 #!/usr/bin/env python
 
+import logging.config
+logging_config_dict = {
+  "version": 1,
+  "formatters": {"simple": {"format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s"}},
+  "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "simple"}},
+  "root": {"level": "DEBUG", "propagate": True, "handlers": ["console"]},
+  "disable_existing_loggers": False,
+}
+logging.config.dictConfig(logging_config_dict)
+log = logging.getLogger()
+log.debug("logging enabled!")
+
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
