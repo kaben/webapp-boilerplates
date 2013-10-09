@@ -43,19 +43,21 @@ class TestHello(unittest.TestCase):
   def test_flashed_messages(self):
     @webapp.app.route("/flashtest")
     def flashtest():
-      flash("Testing flashed messages")
+      flash("Testing flashed messages.")
       return render_template("hello.html", title="Hi there.")
-    print self.client.get("/flashtest").data
-    self.assertTrue("Testing flashed messages" in self.client.get("/flashtest").data)
+    self.assertTrue("Testing flashed messages." in self.client.get("/flashtest").data)
     
   def test_error_messages(self):
     @webapp.app.route("/errortest")
     def errortest():
       error = "This is an error!"
       return render_template("hello.html", title="Hi there.", error=error)
-    print self.client.get("/errortest").data
     self.assertTrue("This is an error!" in self.client.get("/errortest").data)
-    
+
+  def test_login_get(self):
+    data = self.client.get("/login").data
+    self.assertTrue("User" in data)
+    self.assertTrue("Password" in data)
 
 if __name__ == "__main__": unittest.main()
 
