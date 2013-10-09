@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# Configure logging before importing anything that also configures logging.
 import logging.config
 logging_config_dict = {
   "version": 1,
@@ -12,19 +13,24 @@ logging.config.dictConfig(logging_config_dict)
 log = logging.getLogger()
 log.debug("logging enabled!")
 
+# Remaining imports.
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 from flask.ext.wtf import PasswordField, TextField
 from flask.ext.wtf import EqualTo, Length, Required
  
+# Flask configuration searches given module for UPPERCASE objects...
 SQLALCHEMY_DATABASE_URI = "sqlite:///hello.db"
 SECRET_KEY = "\xd8\x1e\x88\xf4\xb7\xa9@\xb8p\n2v\x1d\xb5\xb9IfA\xf6\x14\x80\x89\xf4F"
-  
+
+# Setup Flask app.
 app = Flask(__name__)
 app.config.from_object(__name__)
+# Also setup app to use SQLAlchemy.
 db = SQLAlchemy(app)
 
+# Database models.
 class User(db.Model):
   __tablename__ = "users"
   id = db.Column(db.Integer, primary_key=True)
@@ -35,6 +41,7 @@ class User(db.Model):
   def __repr__(self):
     return "<User login: '{login}', email: '{email}'>".format(**self.__dict__)
 
+# HTML forms.
 class LoginForm(Form):
   user = TextField("User", validators=[Required()])
   password = PasswordField("Password", validators=[Required()])
@@ -45,11 +52,13 @@ class RegisterForm(Form):
   password = PasswordField("Password", validators=[Required(), Length(min=10, max=40)])
   confirm = PasswordField("Confirm password", validators=[EqualTo("password", message="Passwords must match")])
 
+# Convenience functions.
 def flash_errors(form):
   for field, errors in form.errors.items():
     for error in errors:
       flash("Error in the '{}' field: {}".format(getattr(form, field).label.text, error), "error")
 
+# Web interface controllers.
 @app.route("/register", methods=["GET", "POST"])
 def register():
   error = None
@@ -93,5 +102,6 @@ def logout():
 def hello():
   return render_template("hello.html", title="Hi there.")
 
+# If this script is being executed instead of imported, run the webapp.
 if __name__ == "__main__": app.run()
 
