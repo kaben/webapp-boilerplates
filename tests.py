@@ -79,11 +79,19 @@ class TestLogin(unittest.TestCase):
       self.assertTrue(session["logged_in"])
     self.assertTrue("Logged in" in data)
 
-  def test_valid_login_put(self):
+  def test_invalid_login_put(self):
     data = self.client.post("/login", data=dict(user="invalid", password="invalid")).data
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
     self.assertTrue("Invalid user" in data)
+
+  def test_valid_login_put(self):
+    with self.client.session_transaction() as session:
+      session["logged_in"] = True
+    data = self.client.get("/logout", follow_redirects=True).data
+    with self.client.session_transaction() as session:
+      self.assertTrue(not "logged_in" in session)
+    self.assertTrue("Logged out" in data)
 
 if __name__ == "__main__": unittest.main()
 

@@ -42,6 +42,12 @@ def login():
   form = LoginForm(request.form)
   return render_template("login.html", form=form, error=error)
 
+@app.route("/logout")
+def logout():
+  session.pop("logged_in", None)
+  flash("Logged out.")
+  return redirect(url_for("login"))
+
 @app.route("/hello")
 def hello():
   return render_template("hello.html", title="Hi there.")
