@@ -2,8 +2,9 @@
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.wtf import Form, Required
+from flask.ext.wtf import Form
 from flask.ext.wtf import PasswordField, TextField
+from flask.ext.wtf import EqualTo, Length, Required
  
 SQLALCHEMY_DATABASE_URI = "sqlite:///hello.db"
 SECRET_KEY = "\xd8\x1e\x88\xf4\xb7\xa9@\xb8p\n2v\x1d\xb5\xb9IfA\xf6\x14\x80\x89\xf4F"
@@ -25,6 +26,28 @@ class User(db.Model):
 class LoginForm(Form):
   user = TextField("User", validators=[Required()])
   password = PasswordField("Password", validators=[Required()])
+
+class RegisterForm(Form):
+  user = TextField("User", validators=[Required(), Length(min=5, max=25)])
+  email = TextField("Email", validators=[Required(), Length(min=5, max=40)])
+  password = PasswordField("Password", validators=[Required(), Length(min=10, max=40)])
+  confirm = PasswordField("Confirm password", validators=[EqualTo("password", message="Passwords must match")])
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+  error = None
+  form = RegisterForm(request.form, csrf_enabled=False)
+  if form.validate_on_submit():
+    new_user = User(
+      login=form.user.data,
+      email=form.email.data,
+      password=form.password.data,
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    flash("Registered! Please login.")
+    return redirect(url_for('login'))
+  return render_template("register.html", form=form, error=error)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

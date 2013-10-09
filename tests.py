@@ -83,17 +83,17 @@ class TestLogin(unittest.TestCase):
     self.assertTrue("user" in data)
     self.assertTrue("password" in data)
 
-  def test_valid_login_put(self):
+  def test_valid_login_post(self):
     # Verifies logging in with valid credentials.
     post_data = dict(user="foo", password="password")
-    data = self.client.post("/login", data=post_data).data
+    self.client.post("/login", data=post_data)
     with self.client.session_transaction() as session:
       self.assertTrue(session["logged_in"])
 
-  def test_invalid_login_put(self):
+  def test_invalid_login_post(self):
     # Verifies that invalid credentials *don't* permit login.
     post_data = dict(user="invalid", password="invalid")
-    data = self.client.post("/login", data=post_data).data
+    self.client.post("/login", data=post_data)
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
 
@@ -101,10 +101,28 @@ class TestLogin(unittest.TestCase):
     # Verifies logging out.
     with self.client.session_transaction() as session:
       session["logged_in"] = True
-    data = self.client.get("/logout").data
+    self.client.get("/logout")
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
 
+  def test_register_get(self):
+    data = self.client.get("/register").data
+    self.assertTrue("<form " in data)
+    self.assertTrue("email" in data)
+    self.assertTrue("confirm" in data)
+
+  def test_valid_register_post(self):
+    self.assertEqual(1, webapp.db.session.query(webapp.User).count())
+    post_data = dict(user="swizz", email="sticks", password="blahblahbl", confirm="blahblahbl")
+    self.client.post("/register", data=post_data)
+    self.assertEqual(2, webapp.db.session.query(webapp.User).count())
+
+  def test_invalid_register_post(self):
+    self.assertEqual(1, webapp.db.session.query(webapp.User).count())
+    post_data = dict(user="bad", email="bad", password="short", confirm="bad")
+    self.client.post("/register", data=post_data)
+    self.assertEqual(1, webapp.db.session.query(webapp.User).count())
+  
 
 if __name__ == "__main__": unittest.main()
 
