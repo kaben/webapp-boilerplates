@@ -19,9 +19,11 @@ class TestHello(unittest.TestCase):
     webapp.db.drop_all()
 
   def test_hello(self):
+    # Verifies client-server interaction with simple hello-world.
     self.assertTrue("Hello" in self.client.get("/hello").data)
 
   def test_db_setup(self):
+    # Verifies database functions well enough for committing data.
     user = webapp.User(login="foo", email="foo@gmail.com", password="password")
     webapp.db.session.add(user)
     webapp.db.session.commit()
@@ -44,6 +46,8 @@ class TestHello(unittest.TestCase):
     self.assertTrue("bar" in dump)
 
   def test_flashed_messages(self):
+    # Verifies that "main_layout.html" template processes flashed messages.
+    # I don't like that "hello.html" is hardwired into this test.
     @webapp.app.route("/flashtest")
     def flashtest():
       flash("Testing flashed messages.")
@@ -51,6 +55,8 @@ class TestHello(unittest.TestCase):
     self.assertTrue("Testing flashed messages." in self.client.get("/flashtest").data)
     
   def test_error_messages(self):
+    # Verifies that "main_layout.html" template processes error messages.
+    # I don't like that "hello.html" is hardwired into this test.
     @webapp.app.route("/errortest")
     def errortest():
       error = "This is an error!"
@@ -61,6 +67,7 @@ class TestLogin(unittest.TestCase):
   def setUp(self):
     setup_database()
     self.client = webapp.app.test_client()
+    # Add a user to the database.
     user = webapp.User(login="foo", email="foo@gmail.com", password="password")
     webapp.db.session.add(user)
     webapp.db.session.commit()
@@ -69,23 +76,27 @@ class TestLogin(unittest.TestCase):
     webapp.db.drop_all()
 
   def test_login_get(self):
+    # Verifies that login page has User/Password form.
     data = self.client.get("/login").data
     self.assertTrue("User" in data)
     self.assertTrue("Password" in data)
 
   def test_valid_login_put(self):
-    data = self.client.post("/login", data=dict(user="foo", password="password")).data
+    # Verifies logging in with valid credentials.
+    data = self.client.post("/login", data=dict(user="foo", password="password"), follow_redirects=True).data
     with self.client.session_transaction() as session:
       self.assertTrue(session["logged_in"])
     self.assertTrue("Logged in" in data)
 
   def test_invalid_login_put(self):
+    # Verifies that invalid credentials *don't* permit login.
     data = self.client.post("/login", data=dict(user="invalid", password="invalid")).data
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
     self.assertTrue("Invalid user" in data)
 
-  def test_valid_login_put(self):
+  def test_logout(self):
+    # Verifies logging out.
     with self.client.session_transaction() as session:
       session["logged_in"] = True
     data = self.client.get("/logout", follow_redirects=True).data
