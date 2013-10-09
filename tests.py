@@ -63,6 +63,7 @@ class TestHello(unittest.TestCase):
       return render_template("hello.html", title="Hi there.", error=error)
     self.assertTrue("This is an error!" in self.client.get("/errortest").data)
 
+
 class TestLogin(unittest.TestCase):
   def setUp(self):
     setup_database()
@@ -78,31 +79,32 @@ class TestLogin(unittest.TestCase):
   def test_login_get(self):
     # Verifies that login page has User/Password form.
     data = self.client.get("/login").data
-    self.assertTrue("User" in data)
-    self.assertTrue("Password" in data)
+    self.assertTrue("<form " in data)
+    self.assertTrue("user" in data)
+    self.assertTrue("password" in data)
 
   def test_valid_login_put(self):
     # Verifies logging in with valid credentials.
-    data = self.client.post("/login", data=dict(user="foo", password="password"), follow_redirects=True).data
+    post_data = dict(user="foo", password="password")
+    data = self.client.post("/login", data=post_data).data
     with self.client.session_transaction() as session:
       self.assertTrue(session["logged_in"])
-    self.assertTrue("Logged in" in data)
 
   def test_invalid_login_put(self):
     # Verifies that invalid credentials *don't* permit login.
-    data = self.client.post("/login", data=dict(user="invalid", password="invalid")).data
+    post_data = dict(user="invalid", password="invalid")
+    data = self.client.post("/login", data=post_data).data
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
-    self.assertTrue("Invalid user" in data)
 
   def test_logout(self):
     # Verifies logging out.
     with self.client.session_transaction() as session:
       session["logged_in"] = True
-    data = self.client.get("/logout", follow_redirects=True).data
+    data = self.client.get("/logout").data
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
-    self.assertTrue("Logged out" in data)
+
 
 if __name__ == "__main__": unittest.main()
 
