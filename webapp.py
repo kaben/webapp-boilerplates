@@ -33,6 +33,11 @@ class RegisterForm(Form):
   password = PasswordField("Password", validators=[Required(), Length(min=10, max=40)])
   confirm = PasswordField("Confirm password", validators=[EqualTo("password", message="Passwords must match")])
 
+def flash_errors(form):
+  for field, errors in form.errors.items():
+    for error in errors:
+      flash("Error in the '{}' field: {}".format(getattr(form, field).label.text, error), "error")
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
   error = None
@@ -47,6 +52,7 @@ def register():
     db.session.commit()
     flash("Registered! Please login.")
     return redirect(url_for('login'))
+  else: flash_errors(form)
   return render_template("register.html", form=form, error=error)
 
 @app.route("/login", methods=["GET", "POST"])

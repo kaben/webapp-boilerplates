@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import webapp
-from flask import flash, render_template, session
+from flask import flash, render_template, request, session
 import unittest
 
 def setup_database():
@@ -48,21 +48,32 @@ class TestHello(unittest.TestCase):
   def test_flashed_messages(self):
     # Verifies that "main_layout.html" template processes flashed messages.
     # I don't like that "hello.html" is hardwired into this test.
-    @webapp.app.route("/flashtest")
-    def flashtest():
+    @webapp.app.route("/flash_test")
+    def flash_test():
       flash("Testing flashed messages.")
-      return render_template("hello.html", title="Hi there.")
-    self.assertTrue("Testing flashed messages." in self.client.get("/flashtest").data)
+      return render_template("hello.html")
+    self.assertTrue("Testing flashed messages." in self.client.get("/flash_test").data)
     
   def test_error_messages(self):
     # Verifies that "main_layout.html" template processes error messages.
     # I don't like that "hello.html" is hardwired into this test.
-    @webapp.app.route("/errortest")
-    def errortest():
+    @webapp.app.route("/error_test")
+    def error_test():
       error = "This is an error!"
-      return render_template("hello.html", title="Hi there.", error=error)
-    self.assertTrue("This is an error!" in self.client.get("/errortest").data)
+      return render_template("hello.html", error=error)
+    self.assertTrue("This is an error!" in self.client.get("/error_test").data)
 
+  def test_flash_form_errors(self):
+    @webapp.app.route("/flash_form_error_test", methods=["POST"])
+    def flash_form_error_test():
+      form = webapp.LoginForm(request.form)
+      if not form.validate_on_submit():
+        webapp.flash_errors(form)
+      return render_template("hello.html")
+    post_data = dict(user="", password="")
+    data = self.client.post("/flash_form_error_test", data=post_data).data
+    print data
+    self.assertTrue("field is required" in data)
 
 class TestLogin(unittest.TestCase):
   def setUp(self):
