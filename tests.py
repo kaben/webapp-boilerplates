@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 
 import webapp
-from flask import flash, render_template
+from flask import flash, render_template, session
 import unittest
+
+def setup_database():
+  webapp.app.config["TESTING"] = True
+  # Tell SQLAlchemy to use an in-memory database.
+  webapp.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
+  webapp.db.create_all()
 
 class TestHello(unittest.TestCase):
   def setUp(self):
-    webapp.app.config["TESTING"] = True
-    # Tell SQLAlchemy to use an in-memory database.
-    webapp.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
+    setup_database()
     self.client = webapp.app.test_client()
-    webapp.db.create_all()
 
   def tearDown(self):
     webapp.db.drop_all()
@@ -54,10 +57,33 @@ class TestHello(unittest.TestCase):
       return render_template("hello.html", title="Hi there.", error=error)
     self.assertTrue("This is an error!" in self.client.get("/errortest").data)
 
+class TestLogin(unittest.TestCase):
+  def setUp(self):
+    setup_database()
+    self.client = webapp.app.test_client()
+    user = webapp.User(login="foo", email="foo@gmail.com", password="password")
+    webapp.db.session.add(user)
+    webapp.db.session.commit()
+
+  def tearDown(self):
+    webapp.db.drop_all()
+
   def test_login_get(self):
     data = self.client.get("/login").data
     self.assertTrue("User" in data)
     self.assertTrue("Password" in data)
+
+  def test_valid_login_put(self):
+    data = self.client.post("/login", data=dict(user="foo", password="password")).data
+    with self.client.session_transaction() as session:
+      self.assertTrue(session["logged_in"])
+    self.assertTrue("Logged in" in data)
+
+  def test_valid_login_put(self):
+    data = self.client.post("/login", data=dict(user="invalid", password="invalid")).data
+    with self.client.session_transaction() as session:
+      self.assertTrue(not "logged_in" in session)
+    self.assertTrue("Invalid user" in data)
 
 if __name__ == "__main__": unittest.main()
 

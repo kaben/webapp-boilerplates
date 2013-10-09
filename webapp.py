@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-from flask import Flask, render_template, request
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form, Required
-from flask.ext.wtf import TextField, PasswordField
+from flask.ext.wtf import PasswordField, TextField
  
 SQLALCHEMY_DATABASE_URI = "sqlite:///hello.db"
 SECRET_KEY = "\xd8\x1e\x88\xf4\xb7\xa9@\xb8p\n2v\x1d\xb5\xb9IfA\xf6\x14\x80\x89\xf4F"
@@ -26,9 +26,19 @@ class LoginForm(Form):
   user = TextField("User", validators=[Required()])
   password = PasswordField("Password", validators=[Required()])
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
   error = None
+  if request.method == "POST":
+    login = request.form["user"]
+    password = request.form["password"]
+    user = User.query.filter_by(login=login, password=password).first()
+    if user is None:
+      error = "Invalid user/password."
+    else:
+      session["logged_in"] = True
+      flash("Logged in.")
+      return redirect(url_for("hello"))
   form = LoginForm(request.form)
   return render_template("login.html", form=form, error=error)
 
