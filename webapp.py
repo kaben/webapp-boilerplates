@@ -19,6 +19,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 from flask.ext.wtf import PasswordField, TextField
 from flask.ext.wtf import EqualTo, Length, Required
+from functools import wraps
  
 # Flask configuration searches given module for UPPERCASE objects...
 SQLALCHEMY_DATABASE_URI = "sqlite:///hello.db"
@@ -57,6 +58,16 @@ def flash_errors(form):
   for field, errors in form.errors.items():
     for error in errors:
       flash("Error in the '{}' field: {}".format(getattr(form, field).label.text, error), "error")
+
+def login_required(f):
+  @wraps(f)
+  def wrap(*args, **kw):
+    if "logged_in" in session:
+      return f(*args, **kw)
+    else:
+      flash("Please login.")
+      return redirect(url_for("login"))
+  return wrap
 
 # Web interface controllers.
 @app.route("/register", methods=["GET", "POST"])
@@ -98,6 +109,7 @@ def logout():
   flash("Logged out.")
   return redirect(url_for("login"))
 
+@app.route("/")
 @app.route("/home")
 def home():
   return render_template("home.html", title="'Home' placeholder")
@@ -107,6 +119,7 @@ def about():
   return render_template("about.html", title="'About' placeholder")
 
 @app.route("/hello")
+@login_required
 def hello():
   return render_template("hello.html", title="Hi there.")
 

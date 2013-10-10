@@ -49,8 +49,12 @@
             </li>
           </ul>
           <ul class="nav navbar-nav pull-right">
+          {% if 'logged_in' in session %}
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+          {% else %}
             <li><a href="{{ url_for('register') }}">Signup</a></li>
             <li><a href="{{ url_for('login') }}">Login</a></li>
+          {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>
