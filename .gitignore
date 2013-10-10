@@ -10,3 +10,6 @@
 
 # Ignore databases.
 *.db
+
+# Ignore VirtualEnv subdirectory named "venv".
+venv
