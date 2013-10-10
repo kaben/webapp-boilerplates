@@ -3,7 +3,7 @@
 *.py?
 
 # Ignore Vim swapfiles.
-*.swp
+*.sw?
 
 # Ignore test coverage files.
 .coverage
