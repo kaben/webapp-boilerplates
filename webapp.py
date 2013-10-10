@@ -112,16 +112,16 @@ def logout():
 @app.route("/")
 @app.route("/home")
 def home():
-  return render_template("home.html", title="'Home' placeholder")
+  return render_template("home.html")
 
 @app.route("/about")
 def about():
-  return render_template("about.html", title="'About' placeholder")
+  return render_template("about.html")
 
 @app.route("/hello")
 @login_required
 def hello():
-  return render_template("hello.html", title="Hi there.")
+  return render_template("hello.html")
 
 # If this script is being executed instead of imported, run the webapp.
 if __name__ == "__main__": app.run(debug=True)

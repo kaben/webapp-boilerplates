@@ -20,7 +20,15 @@ class TestHello(unittest.TestCase):
 
   def test_hello(self):
     # Verifies client-server interaction with simple hello-world.
+    with self.client.session_transaction() as session:
+      session["logged_in"] = True
     self.assertTrue("Hello" in self.client.get("/hello").data)
+
+  def test_about(self):
+    self.assertTrue("About" in self.client.get("/about").data)
+
+  def test_home(self):
+    self.assertTrue("Home" in self.client.get("/home").data)
 
   def test_db_setup(self):
     # Verifies database functions well enough for committing data.
@@ -72,7 +80,6 @@ class TestHello(unittest.TestCase):
       return render_template("hello.html")
     post_data = dict(user="", password="")
     data = self.client.post("/flash_form_error_test", data=post_data).data
-    print data
     self.assertTrue("field is required" in data)
 
 class TestLogin(unittest.TestCase):
@@ -134,6 +141,15 @@ class TestLogin(unittest.TestCase):
     self.client.post("/register", data=post_data)
     self.assertEqual(1, webapp.db.session.query(webapp.User).count())
   
+  def test_hello_authentication_check(self):
+    # Verifies client-server interaction with simple hello-world.
+    with self.client.session_transaction() as session:
+      session["logged_in"] = True
+    self.assertTrue("Hello" in self.client.get("/hello").data)
+    with self.client.session_transaction() as session:
+      session.pop("logged_in", None)
+    self.assertTrue(not "Hello" in self.client.get("/hello").data)
+
 
 if __name__ == "__main__": unittest.main()
 
