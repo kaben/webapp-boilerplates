@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Configure logging before importing anything that also configures logging.
 from config import logging_config_dict
 import logging.config
@@ -74,7 +72,4 @@ def about():
 @login_required
 def hello():
   return render_template("hello.html")
-
-# If this script is being executed instead of imported, run the webapp.
-if __name__ == "__main__": app.run(debug=True)
 
