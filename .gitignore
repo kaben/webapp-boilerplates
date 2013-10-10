@@ -11,5 +11,5 @@
 # Ignore databases.
 *.db
 
-# Ignore VirtualEnv subdirectory named "venv".
-venv
+# Ignore VirtualEnv subdirectory named "webapp-boilerplate-venv".
+webapp-boilerplate-venv
