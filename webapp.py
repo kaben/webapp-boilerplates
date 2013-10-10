@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 
 # Configure logging before importing anything that also configures logging.
+from config import logging_config_dict
 import logging.config
-logging_config_dict = {
-  "version": 1,
-  "formatters": {"simple": {"format": "%(asctime)s - %(levelname)s - %(name)s - %(message)s"}},
-  "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "simple"}},
-  "root": {"level": "DEBUG", "propagate": True, "handlers": ["console"]},
-  "disable_existing_loggers": False,
-}
 logging.config.dictConfig(logging_config_dict)
 log = logging.getLogger()
 log.debug("logging enabled!")
@@ -16,36 +10,16 @@ log.debug("logging enabled!")
 # Remaining imports.
 from forms import LoginForm, RegisterForm
 from models import ORM
+from utils import flash_errors, login_required
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from functools import wraps
  
-# Flask configuration searches given module for UPPERCASE objects...
-SQLALCHEMY_DATABASE_URI = "sqlite:///hello.db"
-SECRET_KEY = "\xd8\x1e\x88\xf4\xb7\xa9@\xb8p\n2v\x1d\xb5\xb9IfA\xf6\x14\x80\x89\xf4F"
-
 # Setup Flask app.
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_object("config")
 # Also setup app to use SQLAlchemy models.
 orm = ORM(app)
 db = orm.db
 User = orm.User
-
-# Convenience functions.
-def flash_errors(form):
-  for field, errors in form.errors.items():
-    for error in errors:
-      flash("Error in the '{}' field: {}".format(getattr(form, field).label.text, error), "error")
-
-def login_required(f):
-  @wraps(f)
-  def wrap(*args, **kw):
-    if "logged_in" in session:
-      return f(*args, **kw)
-    else:
-      flash("Please login.")
-      return redirect(url_for("login"))
-  return wrap
 
 # Web interface controllers.
 @app.route("/register", methods=["GET", "POST"])
