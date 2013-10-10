@@ -15,8 +15,8 @@ log.debug("logging enabled!")
 
 # Remaining imports.
 from forms import LoginForm, RegisterForm
+from models import ORM
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask.ext.sqlalchemy import SQLAlchemy
 from functools import wraps
  
 # Flask configuration searches given module for UPPERCASE objects...
@@ -26,19 +26,10 @@ SECRET_KEY = "\xd8\x1e\x88\xf4\xb7\xa9@\xb8p\n2v\x1d\xb5\xb9IfA\xf6\x14\x80\x89\
 # Setup Flask app.
 app = Flask(__name__)
 app.config.from_object(__name__)
-# Also setup app to use SQLAlchemy.
-db = SQLAlchemy(app)
-
-# Database models.
-class User(db.Model):
-  __tablename__ = "users"
-  id = db.Column(db.Integer, primary_key=True)
-  login = db.Column(db.String, unique=True, nullable=False)
-  email = db.Column(db.String, unique=True, nullable=False)
-  password = db.Column(db.String, nullable=False)
-
-  def __repr__(self):
-    return "<User login: '{login}', email: '{email}'>".format(**self.__dict__)
+# Also setup app to use SQLAlchemy models.
+orm = ORM(app)
+db = orm.db
+User = orm.User
 
 # Convenience functions.
 def flash_errors(form):
