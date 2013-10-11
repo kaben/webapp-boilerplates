@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from webapp import app
+import os
 
-# If this script is being executed instead of imported, run the webapp.
-if __name__ == "__main__": app.run(debug=True)
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port, debug=False)
 

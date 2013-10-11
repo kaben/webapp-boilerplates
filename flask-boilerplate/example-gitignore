@@ -1,0 +1,12 @@
+
+# Ignore byte-compiled Python files.
+*.py?
+
+# Ignore Vim swapfiles.
+*.sw?
+
+# Ignore test coverage files.
+.coverage
+
+# Ignore VirtualEnv subdirectory named "webapp-venv".
+webapp-venv
