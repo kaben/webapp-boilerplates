@@ -1,0 +1,41 @@
+
+- Notes on the Flask boilerplate:
+  - Here's a condensed version of the process I used to create the Flask
+    boilerplate:
+    - Create a simple hello-world webapp using Flask.
+    - Add view template hello.html to render HTML.
+    - Add database with model and tests for table users.
+    - Add scripts and tests to populate and view the database.
+    - Add error messages and flashed messages to the main layout template.
+    - Add, process, and test a login form.
+    - Add and test a logout page.
+    - Add and test user registration.
+    - Add and test form validation and error reporting.
+    - Add and test authentication.
+    - Add and test logging.
+    - Incorporate Twitter Bootstrap for styling.
+    - Cleanup code, moving models, views, and forms to their own files.
+    - Cleanup directory structure.
+    
+  - This could be condensed to:
+    - hello-world
+    - Add testing
+    - Add logging
+    - Templatize
+    - Add database
+    - Add authentication
+    - Add error- and flash-messages, and form validation and error reporting
+    - Add styling
+    - Cleanup code and directory structure
+    
+  - My proposed development cycle:
+    - Clone the boilerplate repository
+    - Copy needed boilerplate to make skeleton webapp directory
+    - Install VirtualEnv and requirements
+    - Git-init, -add, -commit webapp directory
+    - Deploy to Heroku
+    - Enter development cycle:
+      - Edit, run, and test app locally
+      - Push to Github and Heroku
+      - Test live application
+      - Repeat
