@@ -10,6 +10,5 @@ mod = Blueprint(
 
 @mod.route("/")
 def hello_world():
-  #return "Hello, world!"
   return render_template("hello_world.html")
 
