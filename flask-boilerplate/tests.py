@@ -34,7 +34,7 @@ class TestHello(unittest.TestCase):
 
   def test_db_setup(self):
     # Verifies database functions well enough for committing data.
-    user = webapp.User(login="foo", email="foo@gmail.com", password="password")
+    user = webapp.orm.User(login="foo", email="foo@gmail.com", password="password")
     webapp.db.session.add(user)
     webapp.db.session.commit()
 
@@ -42,14 +42,14 @@ class TestHello(unittest.TestCase):
     # The populate_db script should create some users.
     import populate_db
     populate_db.populate_database(webapp)
-    query = webapp.db.session.query(webapp.User)
+    query = webapp.db.session.query(webapp.orm.User)
     self.assertTrue(0 < query.count())
     
   def test_view_db_script(self):
     # The view_db script should return a string with info about all users.
     import view_db
-    webapp.db.session.add(webapp.User(login="foo", email="foo@gmail.com", password="password"))
-    webapp.db.session.add(webapp.User(login="bar", email="bar@gmail.com", password="password"))
+    webapp.db.session.add(webapp.orm.User(login="foo", email="foo@gmail.com", password="password"))
+    webapp.db.session.add(webapp.orm.User(login="bar", email="bar@gmail.com", password="password"))
     webapp.db.session.commit()
     dump = view_db.view_database(webapp)
     self.assertTrue("foo" in dump)
@@ -89,7 +89,7 @@ class TestLogin(unittest.TestCase):
     setup_database()
     self.client = webapp.app.test_client()
     # Add a user to the database.
-    user = webapp.User(login="foo", email="foo@gmail.com", password="password")
+    user = webapp.orm.User(login="foo", email="foo@gmail.com", password="password")
     webapp.db.session.add(user)
     webapp.db.session.commit()
 
@@ -126,22 +126,22 @@ class TestLogin(unittest.TestCase):
       self.assertTrue(not "logged_in" in session)
 
   def test_register_get(self):
-    data = self.client.get("/register").data
+    data = self.client.get("/register/").data
     self.assertTrue("<form " in data)
     self.assertTrue("email" in data)
     self.assertTrue("confirm" in data)
 
   def test_valid_register_post(self):
-    self.assertEqual(1, webapp.db.session.query(webapp.User).count())
+    self.assertEqual(1, webapp.db.session.query(webapp.orm.User).count())
     post_data = dict(user="swizz", email="sticks", password="blahblahbl", confirm="blahblahbl")
-    self.client.post("/register", data=post_data)
-    self.assertEqual(2, webapp.db.session.query(webapp.User).count())
+    result = self.client.post("/register/", data=post_data)
+    self.assertEqual(2, webapp.db.session.query(webapp.orm.User).count())
 
   def test_invalid_register_post(self):
-    self.assertEqual(1, webapp.db.session.query(webapp.User).count())
+    self.assertEqual(1, webapp.db.session.query(webapp.orm.User).count())
     post_data = dict(user="bad", email="bad", password="short", confirm="bad")
-    self.client.post("/register", data=post_data)
-    self.assertEqual(1, webapp.db.session.query(webapp.User).count())
+    self.client.post("/register/", data=post_data)
+    self.assertEqual(1, webapp.db.session.query(webapp.orm.User).count())
   
   def test_home_authentication_check(self):
     with self.client.session_transaction() as session:
