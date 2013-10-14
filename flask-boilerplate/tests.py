@@ -8,7 +8,7 @@ def setup_database():
   webapp.app.config["TESTING"] = True
   # Tell SQLAlchemy to use an in-memory database.
   webapp.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
-  webapp.db.create_all()
+  webapp.orm.db.create_all()
 
 class TestHello(unittest.TestCase):
   def setUp(self):
@@ -16,7 +16,7 @@ class TestHello(unittest.TestCase):
     self.client = webapp.app.test_client()
 
   def tearDown(self):
-    webapp.db.drop_all()
+    webapp.orm.db.drop_all()
 
   def test_hello_world(self):
     # Verifies client-server interaction with simple hello-world.
@@ -35,22 +35,22 @@ class TestHello(unittest.TestCase):
   def test_db_setup(self):
     # Verifies database functions well enough for committing data.
     user = webapp.orm.User(login="foo", email="foo@gmail.com", password="password")
-    webapp.db.session.add(user)
-    webapp.db.session.commit()
+    webapp.orm.db.session.add(user)
+    webapp.orm.db.session.commit()
 
   def test_populate_db_script(self):
     # The populate_db script should create some users.
     import populate_db
     populate_db.populate_database(webapp)
-    query = webapp.db.session.query(webapp.orm.User)
+    query = webapp.orm.db.session.query(webapp.orm.User)
     self.assertTrue(0 < query.count())
     
   def test_view_db_script(self):
     # The view_db script should return a string with info about all users.
     import view_db
-    webapp.db.session.add(webapp.orm.User(login="foo", email="foo@gmail.com", password="password"))
-    webapp.db.session.add(webapp.orm.User(login="bar", email="bar@gmail.com", password="password"))
-    webapp.db.session.commit()
+    webapp.orm.db.session.add(webapp.orm.User(login="foo", email="foo@gmail.com", password="password"))
+    webapp.orm.db.session.add(webapp.orm.User(login="bar", email="bar@gmail.com", password="password"))
+    webapp.orm.db.session.commit()
     dump = view_db.view_database(webapp)
     self.assertTrue("foo" in dump)
     self.assertTrue("bar" in dump)
@@ -90,11 +90,11 @@ class TestLogin(unittest.TestCase):
     self.client = webapp.app.test_client()
     # Add a user to the database.
     user = webapp.orm.User(login="foo", email="foo@gmail.com", password="password")
-    webapp.db.session.add(user)
-    webapp.db.session.commit()
+    webapp.orm.db.session.add(user)
+    webapp.orm.db.session.commit()
 
   def tearDown(self):
-    webapp.db.drop_all()
+    webapp.orm.db.drop_all()
 
   def test_login_get(self):
     # Verifies that login page has User/Password form.
@@ -132,16 +132,16 @@ class TestLogin(unittest.TestCase):
     self.assertTrue("confirm" in data)
 
   def test_valid_register_post(self):
-    self.assertEqual(1, webapp.db.session.query(webapp.orm.User).count())
+    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
     post_data = dict(user="swizz", email="sticks", password="blahblahbl", confirm="blahblahbl")
     result = self.client.post("/register/", data=post_data)
-    self.assertEqual(2, webapp.db.session.query(webapp.orm.User).count())
+    self.assertEqual(2, webapp.orm.db.session.query(webapp.orm.User).count())
 
   def test_invalid_register_post(self):
-    self.assertEqual(1, webapp.db.session.query(webapp.orm.User).count())
+    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
     post_data = dict(user="bad", email="bad", password="short", confirm="bad")
     self.client.post("/register/", data=post_data)
-    self.assertEqual(1, webapp.db.session.query(webapp.orm.User).count())
+    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
   
   def test_home_authentication_check(self):
     with self.client.session_transaction() as session:

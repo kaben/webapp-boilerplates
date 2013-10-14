@@ -16,9 +16,7 @@ app = Flask(__name__)
 app.config.from_object("config")
 # Also setup app to use SQLAlchemy models.
 orm = ORM(app)
-db = orm.db
 app.config["orm"] = orm
-app.config["db"] = db
 
 from hello_world.views import mod as hello_world_mod
 from register.views import mod as register_mod
