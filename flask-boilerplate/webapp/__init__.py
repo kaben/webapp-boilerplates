@@ -72,7 +72,3 @@ def home():
 def about():
   return render_template("about.html")
 
-#@app.route("/hello")
-#def hello():
-#  return render_template("hello.html")
-

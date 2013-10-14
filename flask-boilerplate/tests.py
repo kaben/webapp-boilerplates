@@ -21,14 +21,7 @@ class TestHello(unittest.TestCase):
   def test_hello_world(self):
     # Verifies client-server interaction with simple hello-world.
     data = self.client.get("/hello_world/").data
-    print "data:", data
     self.assertTrue("Hello" in data)
-
-  #def test_hello(self):
-  #  # Verifies client-server interaction with simple hello-world.
-  #  with self.client.session_transaction() as session:
-  #    session["logged_in"] = True
-  #  self.assertTrue("Hello" in self.client.get("/hello").data)
 
   def test_about(self):
     self.assertTrue("About" in self.client.get("/about").data)
@@ -64,20 +57,20 @@ class TestHello(unittest.TestCase):
 
   def test_flashed_messages(self):
     # Verifies that "main_layout.html" template processes flashed messages.
-    # I don't like that "hello.html" is hardwired into this test.
+    # I don't like that "about.html" is hardwired into this test.
     @webapp.app.route("/flash_test")
     def flash_test():
       flash("Testing flashed messages.")
-      return render_template("hello.html")
+      return render_template("about.html")
     self.assertTrue("Testing flashed messages." in self.client.get("/flash_test").data)
     
   def test_error_messages(self):
     # Verifies that "main_layout.html" template processes error messages.
-    # I don't like that "hello.html" is hardwired into this test.
+    # I don't like that "about.html" is hardwired into this test.
     @webapp.app.route("/error_test")
     def error_test():
       error = "This is an error!"
-      return render_template("hello.html", error=error)
+      return render_template("about.html", error=error)
     self.assertTrue("This is an error!" in self.client.get("/error_test").data)
 
   def test_flash_form_errors(self):
@@ -86,7 +79,7 @@ class TestHello(unittest.TestCase):
       form = webapp.LoginForm(request.form)
       if not form.validate_on_submit():
         webapp.flash_errors(form)
-      return render_template("hello.html")
+      return render_template("about.html")
     post_data = dict(user="", password="")
     data = self.client.post("/flash_form_error_test", data=post_data).data
     self.assertTrue("field is required" in data)
