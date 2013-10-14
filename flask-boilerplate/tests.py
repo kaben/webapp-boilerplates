@@ -18,16 +18,25 @@ class TestHello(unittest.TestCase):
   def tearDown(self):
     webapp.db.drop_all()
 
-  def test_hello(self):
+  def test_hello_world(self):
     # Verifies client-server interaction with simple hello-world.
-    with self.client.session_transaction() as session:
-      session["logged_in"] = True
-    self.assertTrue("Hello" in self.client.get("/hello").data)
+    data = self.client.get("/hello_world/").data
+    print "data:", data
+    self.assertTrue("Hello" in data)
+
+  #def test_hello(self):
+  #  # Verifies client-server interaction with simple hello-world.
+  #  with self.client.session_transaction() as session:
+  #    session["logged_in"] = True
+  #  self.assertTrue("Hello" in self.client.get("/hello").data)
 
   def test_about(self):
     self.assertTrue("About" in self.client.get("/about").data)
 
   def test_home(self):
+    # Verifies client-server interaction with simple hello-world.
+    with self.client.session_transaction() as session:
+      session["logged_in"] = True
     self.assertTrue("Home" in self.client.get("/home").data)
 
   def test_db_setup(self):
@@ -141,14 +150,13 @@ class TestLogin(unittest.TestCase):
     self.client.post("/register", data=post_data)
     self.assertEqual(1, webapp.db.session.query(webapp.User).count())
   
-  def test_hello_authentication_check(self):
-    # Verifies client-server interaction with simple hello-world.
+  def test_home_authentication_check(self):
     with self.client.session_transaction() as session:
       session["logged_in"] = True
-    self.assertTrue("Hello" in self.client.get("/hello").data)
+    self.assertTrue("Home" in self.client.get("/home").data)
     with self.client.session_transaction() as session:
       session.pop("logged_in", None)
-    self.assertTrue(not "Hello" in self.client.get("/hello").data)
+    self.assertTrue(not "Home" in self.client.get("/home").data)
 
 
 if __name__ == "__main__": unittest.main()

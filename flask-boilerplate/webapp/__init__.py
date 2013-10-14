@@ -19,6 +19,9 @@ orm = ORM(app)
 db = orm.db
 User = orm.User
 
+from hello_world.views import mod as hello_world_mod
+app.register_blueprint(hello_world_mod)
+
 # Web interface controllers.
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -49,7 +52,7 @@ def login():
     else:
       session["logged_in"] = True
       flash("Logged in.")
-      return redirect(url_for("hello"))
+      return redirect(url_for("home"))
   form = LoginForm(request.form)
   return render_template("login.html", form=form, error=error)
 
@@ -61,6 +64,7 @@ def logout():
 
 @app.route("/")
 @app.route("/home")
+@login_required
 def home():
   return render_template("home.html")
 
@@ -68,8 +72,7 @@ def home():
 def about():
   return render_template("about.html")
 
-@app.route("/hello")
-@login_required
-def hello():
-  return render_template("hello.html")
+#@app.route("/hello")
+#def hello():
+#  return render_template("hello.html")
 
