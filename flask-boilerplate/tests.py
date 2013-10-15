@@ -10,18 +10,24 @@ def setup_database():
   webapp.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
   webapp.orm.db.create_all()
 
+
 class TestHello(unittest.TestCase):
+  def setUp(self):
+    self.client = webapp.app.test_client()
+
+  def test_hello_world(self):
+    # Verifies client-server interaction with simple hello-world.
+    data = self.client.get("/hello_world/").data
+    self.assertTrue("Hello" in data)
+
+
+class TestWebapp(unittest.TestCase):
   def setUp(self):
     setup_database()
     self.client = webapp.app.test_client()
 
   def tearDown(self):
     webapp.orm.db.drop_all()
-
-  def test_hello_world(self):
-    # Verifies client-server interaction with simple hello-world.
-    data = self.client.get("/hello_world/").data
-    self.assertTrue("Hello" in data)
 
   def test_about(self):
     self.assertTrue("About" in self.client.get("/about").data)
@@ -83,6 +89,7 @@ class TestHello(unittest.TestCase):
     post_data = dict(user="", password="")
     data = self.client.post("/flash_form_error_test", data=post_data).data
     self.assertTrue("field is required" in data)
+
 
 class TestLogin(unittest.TestCase):
   def setUp(self):
