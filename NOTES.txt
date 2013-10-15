@@ -16,6 +16,8 @@
     - Incorporate Twitter Bootstrap for styling.
     - Cleanup code, moving models, views, and forms to their own files.
     - Cleanup directory structure.
+    - Moved hello-world, authentication, and registration into three separate
+      Flask Blueprints.
     
   - This could be condensed to:
     - hello-world
@@ -27,6 +29,7 @@
     - Add error- and flash-messages, and form validation and error reporting
     - Add styling
     - Cleanup code and directory structure
+    - Separate concerns into Flask Blueprints
     
   - My proposed development cycle:
     - Clone the boilerplate repository
