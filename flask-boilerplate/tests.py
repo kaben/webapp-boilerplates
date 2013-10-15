@@ -76,9 +76,9 @@ class TestHello(unittest.TestCase):
   def test_flash_form_errors(self):
     @webapp.app.route("/flash_form_error_test", methods=["POST"])
     def flash_form_error_test():
-      form = webapp.LoginForm(request.form)
+      form = webapp.auth.forms.LoginForm(request.form)
       if not form.validate_on_submit():
-        webapp.flash_errors(form)
+        webapp.utils.flash_errors(form)
       return render_template("about.html")
     post_data = dict(user="", password="")
     data = self.client.post("/flash_form_error_test", data=post_data).data
@@ -98,7 +98,7 @@ class TestLogin(unittest.TestCase):
 
   def test_login_get(self):
     # Verifies that login page has User/Password form.
-    data = self.client.get("/login").data
+    data = self.client.get("/auth/").data
     self.assertTrue("<form " in data)
     self.assertTrue("user" in data)
     self.assertTrue("password" in data)
@@ -106,14 +106,14 @@ class TestLogin(unittest.TestCase):
   def test_valid_login_post(self):
     # Verifies logging in with valid credentials.
     post_data = dict(user="foo", password="password")
-    self.client.post("/login", data=post_data)
+    self.client.post("/auth/", data=post_data)
     with self.client.session_transaction() as session:
       self.assertTrue(session["logged_in"])
 
   def test_invalid_login_post(self):
     # Verifies that invalid credentials *don't* permit login.
     post_data = dict(user="invalid", password="invalid")
-    self.client.post("/login", data=post_data)
+    self.client.post("/auth/", data=post_data)
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
 
@@ -121,7 +121,7 @@ class TestLogin(unittest.TestCase):
     # Verifies logging out.
     with self.client.session_transaction() as session:
       session["logged_in"] = True
-    self.client.get("/logout")
+    self.client.get("/auth/logout")
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
 

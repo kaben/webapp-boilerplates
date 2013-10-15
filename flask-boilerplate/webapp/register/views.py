@@ -25,7 +25,7 @@ def register():
     orm.db.session.add(new_user)
     orm.db.session.commit()
     flash("Registered! Please login.")
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
   else: flash_errors(form)
   return render_template("register.html", form=form, error=error)
 

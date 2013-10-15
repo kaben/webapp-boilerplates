@@ -14,7 +14,7 @@ def login_required(f):
       return f(*args, **kw)
     else:
       flash("Please login.")
-      return redirect(url_for("login"))
+      return redirect(url_for("auth.login"))
   return wrap
 
 

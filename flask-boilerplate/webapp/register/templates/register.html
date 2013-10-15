@@ -9,5 +9,5 @@
     <p>{{ form.confirm.label }}: {{ form.confirm }}</p>
     <p><input type="submit" value="Registered"/></p>
   </form>
-  <p><em>Already registered?</em> Click <a href="{{ url_for('login') }}">here</a> to login.</p>
+  <p><em>Already registered?</em> Click <a href="{{ url_for('auth.login') }}">here</a> to login.</p>
 {% endblock %}
