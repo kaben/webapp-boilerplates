@@ -91,7 +91,38 @@ class TestWebapp(unittest.TestCase):
     self.assertTrue("field is required" in data)
 
 
-class TestLogin(unittest.TestCase):
+class TestRegistration(unittest.TestCase):
+  def setUp(self):
+    setup_database()
+    self.client = webapp.app.test_client()
+    # Add a user to the database.
+    user = webapp.orm.User(login="foo", email="foo@gmail.com", password="password")
+    webapp.orm.db.session.add(user)
+    webapp.orm.db.session.commit()
+
+  def tearDown(self):
+    webapp.orm.db.drop_all()
+
+  def test_register_get(self):
+    data = self.client.get("/register/").data
+    self.assertTrue("<form " in data)
+    self.assertTrue("email" in data)
+    self.assertTrue("confirm" in data)
+
+  def test_valid_register_post(self):
+    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
+    post_data = dict(user="swizz", email="sticks", password="blahblahbl", confirm="blahblahbl")
+    result = self.client.post("/register/", data=post_data)
+    self.assertEqual(2, webapp.orm.db.session.query(webapp.orm.User).count())
+
+  def test_invalid_register_post(self):
+    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
+    post_data = dict(user="bad", email="bad", password="short", confirm="bad")
+    self.client.post("/register/", data=post_data)
+    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
+
+
+class TestAuthentication(unittest.TestCase):
   def setUp(self):
     setup_database()
     self.client = webapp.app.test_client()
@@ -131,24 +162,6 @@ class TestLogin(unittest.TestCase):
     self.client.get("/auth/logout")
     with self.client.session_transaction() as session:
       self.assertTrue(not "logged_in" in session)
-
-  def test_register_get(self):
-    data = self.client.get("/register/").data
-    self.assertTrue("<form " in data)
-    self.assertTrue("email" in data)
-    self.assertTrue("confirm" in data)
-
-  def test_valid_register_post(self):
-    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
-    post_data = dict(user="swizz", email="sticks", password="blahblahbl", confirm="blahblahbl")
-    result = self.client.post("/register/", data=post_data)
-    self.assertEqual(2, webapp.orm.db.session.query(webapp.orm.User).count())
-
-  def test_invalid_register_post(self):
-    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
-    post_data = dict(user="bad", email="bad", password="short", confirm="bad")
-    self.client.post("/register/", data=post_data)
-    self.assertEqual(1, webapp.orm.db.session.query(webapp.orm.User).count())
   
   def test_home_authentication_check(self):
     with self.client.session_transaction() as session:
