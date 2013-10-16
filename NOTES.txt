@@ -42,3 +42,37 @@
       - Push to Github and Heroku
       - Test live application
       - Repeat
+
+  - To add a new model:
+    - Edit "flask-boilerplate/webapp/models.py", adding a new class to the
+      "__init__()" function of class ORM, and assigning the class to an
+      instance variable of the same name.
+
+  - To add a new blueprint:
+    - Make a subdirectory for the blueprint (e.g., "my_blueprint").
+    - Create a file "__init__.py" in the subdirectory (e.g.,
+      "my_blueprint/__init__.py"); the file can be empty.
+    - Create a views module "views.py" (e.g., "my_blueprint/views.py"). Create
+      a new view controller for each web page in the blueprint. Use the
+      existing file "register/views.py" as an example.
+      - Create the blueprint in the views module, using the register vies
+        module as an example. Give the blueprint a unique name (e.g.,
+        "my_blueprint").
+      - To get the URL leading to a particular controller name "my_controller"
+        via the "url_for()" function, pass it the name of the blueprint,
+        followed by a dot, followed by the name of the controller (e.g.,
+        url_for("my_blueprint.my_controller")).
+      - View controllers that need database access should use code like the
+        following:
+        - orm = current_app.config["orm"]
+        - db = orm.db
+      - The "db" object is a Flask-SQLAlchemy database reference. See the
+        Flask-SQLAlchemy docs for more info.
+    - Create a forms module "forms.py" (e.g., "my_blueprint/forms.py"). Create
+      a new subclass of Form for each HTML form needed. Use the existing file
+      "register/forms.py" as an example.
+    - Create a subdirectory "templates" for the blueprint's HTML template files
+      (e.g., "my_blueprint/templates").
+    - Create HTML template files for each controller that needs to render HTML
+      (e.g., "my_blueprint/templates/my_blueprint.html"). Use the existing file
+      "register/templates/register.html" as an example.
