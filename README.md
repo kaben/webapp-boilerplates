@@ -16,7 +16,7 @@ views, models, and forms modules is tightly cross-dependent, which means the
 modules can't be easily tested in isolation. Moreover the Blueprint examples in
 the book have similar cross-dependencies.
 
-In my own version of the boilerplates, I've isolated the forms and models from
+In my own version of the boilerplate, I've isolated the forms and models from
 the views, and the Blueprints from the main web application. Since concerns are
-more-sucessfully separated, unit testing is easier, and my boilerplates should
+more-sucessfully separated, unit testing is easier, and my boilerplate should
 make for more reliable web apps.
