@@ -18,5 +18,5 @@ the book have similar cross-dependencies.
 
 In my own version of the boilerplate, I've isolated the forms and models from
 the views, and the Blueprints from the main web application. Since concerns are
-more-sucessfully separated, unit testing is easier, and my boilerplate should
-make for more reliable web apps.
+separated, unit testing is easier, and my boilerplate should make for more
+reliable web apps.
